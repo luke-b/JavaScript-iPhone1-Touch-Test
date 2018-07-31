@@ -1,0 +1,144 @@
+<html><head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=320, initial-scale=1.0, user-scalable=no"><title>Geewa.com Event Tester</title>
+<style>
+.ballDiv {
+	position: relative;
+	width: 50;
+	height: 50;
+	background-image: url(ball.png);
+	visibility: visible;
+}
+</style>
+
+<script language="JavaScript">
+
+		var gBallCount = 0;
+
+		var Ball = function(initX, initY) {
+			this.x = initX;
+			this.y = initY;
+			this.vectorAngle = Math.PI/4;
+			this.vectorSize = 20;
+			this.divid = 'ball-div-' + gBallCount;
+			var si = document.getElementById('wrapper');
+			var st = document.createElement('div');
+			st.setAttribute('id',this.divid);
+			st.setAttribute('class','ballDiv');
+			gBallCount++;
+			st.style.position = 'relative';
+   		        st.style.top = this.y;
+   		        st.style.left = this.x;
+			st.style.width = 50;
+			st.style.height = 50;
+			si.appendChild(st);
+		}
+
+		Ball.prototype= {
+			sx:0,
+			sy:0,
+			ex:0,
+			ey:0,
+		  decr:0.1,
+			decrSize: 0.9,
+			tim: 0.0,
+			startDrag: function(startX,startY) {
+				this.sx = startX;
+				this.sy = startY;
+			},
+
+			endDrag: function(endX,endY) {
+	 			this.ex = endX;
+				this.ey = endY;
+				this.calculateVector();
+			},
+
+			calculateVector: function() {
+				var dx = this.ex - this.sx;
+				var dy = this.ey - this.sy;
+   			this.vectorAngle = Math.atan2(dy,dx);
+				this.vectorSize = Math.sqrt(dx*dx+dy*dy) / 10;
+				this.animateBall();
+			},
+
+			orientationChange: function(angle) {
+				var rad = (Math.PI / 180) * angle;
+				this.vectorSize = 10;
+	 			this.animateBall();
+			},
+
+			calculateAbsoluteVector: function(ddx,ddy) {
+				this.vectorAngle = Math.atan2(ddy,ddx);
+				this.vectorSize = Math.sqrt(ddx*ddx+ddy*ddy);
+			},
+
+			animateBall: function() {
+				this.moveTo( Math.cos(this.vectorAngle) * this.vectorSize ,
+					     Math.sin(this.vectorAngle) * this.vectorSize);
+				//tim += 1;
+				this.vectorSize -= this.decr;
+				if (this.vectorSize < 0.0) {
+					this.vectorSize = 0.0;
+				} else {
+					var instance = this;
+					setTimeout(function(){instance.animateBall();},5);
+				}
+			},
+
+			moveTo: function(newDX, newDY) {
+				var newX = this.x + newDX;
+				var newY = this.y + newDY;
+				if ( newX > 270 ) {
+					this.x = 270;
+					this.vectoSize *= this.decrSide;
+					this.calculateAbsoluteVector(-newDX,newDY);
+				} else
+				if ( newX < 0 ) {
+					this.x = 0;
+					this.vectorSize *= this.decrSize;
+					this.calculateAbsoluteVector(-newDX,newDY);
+				} else
+				this.x = newX;
+
+				if ( newY < 0 ) {
+					this.y = 0;
+					this.vectorSize *= this.decrSize;
+					this.calculateAbsoluteVector(newDX,-newDY);
+				} else
+				if ( newY > 310 ) {
+   				this.y = 310;
+					this.vectorSize *= this.decrSize;
+					this.calculateAbsoluteVector(newDX,-newDY);
+				} else
+   				this.y = newY;
+	  			var d = document.getElementById(this.divid);
+					d.style.top = Math.round(this.y);
+	  			d.style.left = Math.round(this.x);
+			},
+
+			checkCollisions: function() {
+			}
+		}
+
+		var b1;
+		var x=50;
+
+		function init() {
+   		b1 = new Ball(20,20);
+		}
+
+		function mouseU(e) {
+			b1.startDrag(b1.x + 25, b1.y + 25);
+			b1.endDrag(e.clientX,e.clientY);
+  	}
+
+</script>
+
+</head><body onload="init();">
+
+		<span id="myiphone_screen" onclick="mouseU(event);">
+			    <div id="wrapper" style="background: rgb(0, 0, 0) none repeat scroll 0%; position: absolute; top: 0pt; left: 0pt; height: 360px; width: 320px; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+  				</div>
+	  </span>
+
+</body></html>
